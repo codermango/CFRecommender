@@ -7,6 +7,7 @@ Created on 2014-02-25
 import random
 import math
 import cPickle as pickle
+import numpy as np
 
 class SVD():
     def __init__(self, allfile, trainfile, testfile, factorNum=10):
@@ -65,7 +66,7 @@ class SVD():
         print "Initialize end.The user number is: %d,item number is: %d,the average score is: %f" % (self.userNum, self.itemNum, self.av)
 
 
-     #train model  
+    #train model  
     def train(self, iterTimes=100):
         print "Beginning to train the model......"
         trainfile = self.trainfile
@@ -102,8 +103,9 @@ class SVD():
             if curRmse>preRmse:
                 break
             else:
-                preRmse=curRmse
+                preRmse=curRmse 
         print "Iteration finished!"
+        return self.pu, self.qi
 
     #test on the test set and calculate the RMSE
     def test(self, av, bu, bi, pu, qi):
@@ -148,18 +150,21 @@ class SVD():
         return pscore
     
 
-def split_files(filepath):
-    # 70% for training, 30% for testing
-    pass
 
 
 
 if __name__=='__main__':
-    s=SVD("datasets/ml-100k/u.data","datasets/ml-100k/ua.base","datasets/ml-100k/ua.test")
+    s = SVD("datasets/ml-100k/u.data","datasets/ml-100k/ua.base","datasets/ml-100k/ua.test")
     #print s.userNum,s.itemNum
     #print s.average("data\\ua.base")
-    s.train()
-
+    pu, qi = s.train()
+    pu_array = np.array(pu)
+    qi_array = np.array(qi)
+    qi_array_t = np.transpose(qi_array)
+    user_movie_matrix = np.dot(pu_array, qi_array_t)
+    
+    print len(user_movie_matrix[0])
+    print len(user_movie_matrix)
     
 
 
